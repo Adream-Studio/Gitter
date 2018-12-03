@@ -1,0 +1,1 @@
+global.fs = require('fs');
