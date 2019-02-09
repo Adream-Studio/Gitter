@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Input, ListGroup, ListGroupItem } from 'reactstrap';
 import { markdown } from 'markdown';
-import { getFileList, readFile } from './utils/utils';
+import { getFileList, readFile, isGitReady } from './utils/utils';
 
 const basePath = './public/git';
 
@@ -50,6 +50,7 @@ const previewStyle = {
 class App extends Component {
   state = {
     siderStatus: true,
+    fileName: '',
     text: '',
     html: '',
     fileList: [],
@@ -79,13 +80,14 @@ class App extends Component {
   handleFileOpen = fileName => {
     const content = readFile(`${basePath}/${fileName}`);
     this.setState({
+      fileName,
       text: content,
       html: markdown.toHTML(content),
     });
   }
 
   render() {
-    const { siderStatus, text, html, fileList } = this.state;
+    const { siderStatus, fileName, text, html, fileList } = this.state;
     
     return (
       <div style={{ display: 'flex' ,height: '100%' }}>
@@ -115,16 +117,28 @@ class App extends Component {
         ) : (
           <Button onClick={this.handleSpread} style={spreadBtnStyle}>...</Button>
         ) }
-        <div style={{ display: 'flex', width: '100%' }}>
-          <div style={{ width: '50%' }}>
-            <Input
-              style={textareaStyle}
-              type="textarea"
-              onChange={this.handleTextareaChange}
-              value={text}
-            />
+        <div style={{ width: '100%', height: '100%' }}>
+          <div style={{ display: 'flex', background: '#222', color: '#fff' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: '70%', paddingLeft: '20px' }}>
+              <span>{ fileName }</span>
+            </div>
+            <div style={{ width: '100%', textAlign: 'right', padding: '5px' }}>
+              <Button style={{ padding: '2px', margin: '0px 2px' }} color='primary'>新建</Button>
+              {fileName !== '' && (<Button style={{ padding: '2px', margin: '0px 2px' }} color='danger' >删除</Button>)}
+              {fileName !== '' && (<Button style={{ padding: '2px', margin: '0px 2px' }} color='success' >保存</Button>)}
+            </div>
           </div>
-          <div style={previewStyle} dangerouslySetInnerHTML={{ __html: html }}></div>
+          <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+            <div style={{ width: '50%' }}>
+              <Input
+                style={textareaStyle}
+                type="textarea"
+                onChange={this.handleTextareaChange}
+                value={text}
+              />
+            </div>
+            <div style={previewStyle} dangerouslySetInnerHTML={{ __html: html }}></div>
+          </div>
         </div>
       </div>
     );
